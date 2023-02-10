@@ -1,0 +1,5 @@
+pandas
+ipykernel
+bs4
+selenium
+unidecode
