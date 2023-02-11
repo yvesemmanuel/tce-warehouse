@@ -14,9 +14,9 @@ def get_city_ibge_page(city_name: str) -> str:
     browser = webdriver.Chrome()
     browser.get(url_ibge)
 
-    delay_seconds = 10
+    delay_seconds = 30
     try:
-        WebDriverWait(browser, delay_seconds).until(EC.presence_of_element_located((By.CLASS_NAME, 'painel__indicadores')))
+        WebDriverWait(browser, delay_seconds).until(EC.presence_of_element_located((By.CLASS_NAME, 'lista')))
         print('Found data from ' + city_name)
     except TimeoutException:
         print('Loading took too much time!')
@@ -25,24 +25,28 @@ def get_city_ibge_page(city_name: str) -> str:
 
 
 def get_city_attributes(city_name: str) -> pd.DataFrame:
-    html = get_city_ibge_page(city_name)
-    
+    html = get_city_ibge_page(city_name)    
     soup = BeautifulSoup(html, 'html.parser')
 
-    attributes = []
-    values = []
+    table = soup.find("table", {"class": "lista"})
+    rows = table.find_all("tr", {"class": "lista__indicador"})
 
-    for indicador in soup.find_all('div', {'class': 'indicador'}):
 
-        try:
-            attribute = indicador.find('div', {'class': 'indicador__nome'}).text
-            value = indicador.find('div', {'class': 'indicador__valor'}).text
-            attributes.append(attribute)
-            values.append(value)
-        except:
-            pass
+    data = []
+    for row in rows:
+        nome = row.find("td", {"class": "lista__nome"}).text.strip()
+        valor = row.find("td", {"class": "lista__valor"}).text.strip()
 
-    return pd.DataFrame({'attributes': attributes, 'values': values})
+        data.append([nome, valor])
+
+    return pd.DataFrame(data, columns=["attribute", "value"])
+
+
+def format_data(df: pd.DataFrame) -> pd.DataFrame:
+    df['attribute'] = df['attribute'].apply(lambda x: ' '.join(x.split()))
+    df['value'] = df['value'].apply(lambda x: ' '.join(x.split()))
+
+    return df
 
 
 def build_ibge_cities():
@@ -54,9 +58,11 @@ def build_ibge_cities():
 
         city_formatted = '-'.join(words)
         df_city = get_city_attributes(city_formatted)
+        df_formatted = format_data(df_city)
 
         filename = '_'.join(words)
-        df_city.to_csv('./data/IBGE_cities/{}.csv'.format(filename), index=False)
+        df_formatted.to_csv('./data/IBGE_cities/{}.csv'.format(filename), index=False)
+        break
 
 
 if __name__ == '__main__':
