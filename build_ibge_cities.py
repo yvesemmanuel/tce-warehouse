@@ -19,7 +19,7 @@ def get_city_ibge_page(city_name: str) -> str:
         WebDriverWait(browser, delay_seconds).until(EC.presence_of_element_located((By.CLASS_NAME, 'painel__indicadores')))
         print('Found data from ' + city_name)
     except TimeoutException:
-        print("Loading took too much time!")
+        print('Loading took too much time!')
 
     return browser.page_source
 
@@ -29,15 +29,18 @@ def get_city_attributes(city_name: str) -> pd.DataFrame:
     
     soup = BeautifulSoup(html, 'html.parser')
 
-    indicadores = soup.find_all("div", {"class": "indicador selecionado"})
     attributes = []
     values = []
 
-    for indicador in indicadores:
-        nome = indicador.find("div", {"class": "indicador__nome"}).text
-        valor = indicador.find("div", {"class": "indicador__valor"}).text
-        attributes.append(nome)
-        values.append(valor)
+    for indicador in soup.find_all('div', {'class': 'indicador'}):
+
+        try:
+            attribute = indicador.find('div', {'class': 'indicador__nome'}).text
+            value = indicador.find('div', {'class': 'indicador__valor'}).text
+            attributes.append(attribute)
+            values.append(value)
+        except:
+            pass
 
     return pd.DataFrame({'attributes': attributes, 'values': values})
 

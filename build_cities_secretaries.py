@@ -10,8 +10,8 @@ def build_cities_secretaries():
     df_cities = pd.read_csv('./data/cities_PE.csv')
 
     years = [2019, 2020]
-    health_terms = ['saude', 'saúde', 'médico', 'medico', 'sa?de', 'FUNDO MUNICIPAL DE SA', 'SAUDE', 'SA?DE', 'HOSPITALAR', 'MEDICA', 'MEDICAL', 'medica', 'Fundo Municipal de Saude', 'Fundo Municipal de Sa?']
-    infrastructure_terms = ['infraestrutura', 'obras', 'secretaria construção']
+    health_terms = ['saude', 'saúde', 'médico', 'medico', 'sa?de', 'FUNDO MUNICIPAL DE SA', 'SAUDE', 'SA?DE', 'HOSPITALAR', 'MEDICA', 'MEDICAL', 'medica', 'Fundo Municipal de Saude', 'Fundo Municipal de Sa?', 'SUS', 'sus']
+    infrastructure_terms = ['infraestrutura', 'obras', 'construção', 'constru']
     education_terms = ['educa', 'educação', 'educacao', 'ensino', 'EDUCA']
 
     query_health = build_query(health_terms)
@@ -25,9 +25,31 @@ def build_cities_secretaries():
                 filepath = './data/outputs{}/{}.csv'.format(year, city_id)
                 df = pd.read_csv(filepath)
 
-                df_health = df[df['NOME_UO'].str.contains(query_health, case=False, na=False) == True]
-                df_infrastructure = df[df['NOME_UO'].str.contains(query_infrastructure, case=False, na=False) == True]
-                df_education= df[df['NOME_UO'].str.contains(query_education, case=False, na=False) == True]
+                # HEALTH
+                is_health_term_in_NOME_UO= df['NOME_UO'].str.contains(query_health, case=False, na=False) == True
+                is_health_term_in_NOME_FONTE_REC = df['NOME_FONTE_REC'].str.contains(query_health, case=False, na=False) == True
+
+                contains_health_terms = is_health_term_in_NOME_UO | is_health_term_in_NOME_FONTE_REC
+
+                df_health = df[contains_health_terms]
+                ########
+                
+                # infrastructure
+                is_infrastructure_term_in_NOME_UO = df['NOME_UO'].str.contains(query_infrastructure, case=False, na=False) == True
+                is_infrastructure_term_in_NOME_FONTE_REC = df['NOME_FONTE_REC'].str.contains(query_infrastructure, case=False, na=False) == True
+
+                contains_infrastructure_terms = is_infrastructure_term_in_NOME_UO | is_infrastructure_term_in_NOME_FONTE_REC
+
+                df_infrastructure = df[contains_infrastructure_terms]
+                ################
+
+                # education
+                is_education_term_in_NOME_UO = df['NOME_UO'].str.contains(query_education, case=False, na=False) == True
+                is_education_term_in_NOME_FONTE_REC = df['NOME_FONTE_REC'].str.contains(query_education, case=False, na=False) == True
+
+                contains_education_terms = is_education_term_in_NOME_UO | is_education_term_in_NOME_FONTE_REC
+                df_education = df[contains_education_terms]
+                ###########
 
                 df_health.to_csv('./data/secretaries/{}/health/{}.csv'.format(year, city_id), index=False)
                 df_infrastructure.to_csv('./data/secretaries/{}/infrastructure/{}.csv'.format(year, city_id), index=False)
