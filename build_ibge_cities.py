@@ -16,7 +16,7 @@ def get_city_ibge_page(city_name: str) -> str:
 
     delay_seconds = 30
     try:
-        WebDriverWait(browser, delay_seconds).until(EC.presence_of_element_located((By.CLASS_NAME, 'lista')))
+        WebDriverWait(browser, delay_seconds).until(EC.presence_of_element_located((By.CLASS_NAME, 'lista__nome')))
         print('Found data from ' + city_name)
     except TimeoutException:
         print('Loading took too much time!')
@@ -28,18 +28,17 @@ def get_city_attributes(city_name: str) -> pd.DataFrame:
     html = get_city_ibge_page(city_name)    
     soup = BeautifulSoup(html, 'html.parser')
 
-    table = soup.find("table", {"class": "lista"})
-    rows = table.find_all("tr", {"class": "lista__indicador"})
-
+    table = soup.find('table', {'class': 'lista'})
+    rows = table.find_all('tr', {'class': 'lista__indicador'})
 
     data = []
     for row in rows:
-        nome = row.find("td", {"class": "lista__nome"}).text.strip()
-        valor = row.find("td", {"class": "lista__valor"}).text.strip()
+        nome = row.find('td', {'class': 'lista__nome'}).text.strip()
+        valor = row.find('td', {'class': 'lista__valor'}).text.strip()
 
         data.append([nome, valor])
 
-    return pd.DataFrame(data, columns=["attribute", "value"])
+    return pd.DataFrame(data, columns=['attribute', 'value'])
 
 
 def format_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -62,7 +61,6 @@ def build_ibge_cities():
 
         filename = '_'.join(words)
         df_formatted.to_csv('./data/IBGE_cities/{}.csv'.format(filename), index=False)
-        break
 
 
 if __name__ == '__main__':
