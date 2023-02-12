@@ -11,8 +11,8 @@ def build_cities_secretaries():
 
     years = [2019, 2020]
     health_terms = ['saude', 'saúde', 'médico', 'medico', 'sa?de', 'FUNDO MUNICIPAL DE SA', 'SAUDE', 'SA?DE', 'HOSPITALAR', 'MEDICA', 'MEDICAL', 'medica', 'Fundo Municipal de Saude', 'Fundo Municipal de Sa?', 'SUS', 'sus']
-    infrastructure_terms = ['infraestrutura', 'obras', 'construção', 'constru']
-    education_terms = ['educa', 'educação', 'educacao', 'ensino', 'EDUCA']
+    infrastructure_terms = ['infraestrutura', 'obras', 'construção', 'constru', 'obra', 'infraes']
+    education_terms = ['educa', 'educação', 'educacao', 'ensino', 'EDUCA', 'EDUCACAO', 'EDUC']
 
     query_health = build_query(health_terms)
     query_infrastructure = build_query(infrastructure_terms)
@@ -28,8 +28,9 @@ def build_cities_secretaries():
                 # HEALTH
                 is_health_term_in_NOME_UO= df['NOME_UO'].str.contains(query_health, case=False, na=False) == True
                 is_health_term_in_NOME_FONTE_REC = df['NOME_FONTE_REC'].str.contains(query_health, case=False, na=False) == True
+                is_health_term_in_FORNEC = df['FORNEC'].str.contains(query_health, case=False, na=False) == True
 
-                contains_health_terms = is_health_term_in_NOME_UO | is_health_term_in_NOME_FONTE_REC
+                contains_health_terms = is_health_term_in_NOME_UO | is_health_term_in_NOME_FONTE_REC | is_health_term_in_FORNEC
 
                 df_health = df[contains_health_terms]
                 ########
@@ -37,8 +38,9 @@ def build_cities_secretaries():
                 # infrastructure
                 is_infrastructure_term_in_NOME_UO = df['NOME_UO'].str.contains(query_infrastructure, case=False, na=False) == True
                 is_infrastructure_term_in_NOME_FONTE_REC = df['NOME_FONTE_REC'].str.contains(query_infrastructure, case=False, na=False) == True
+                is_infrastructure_term_in_FORNEC = df['FORNEC'].str.contains(query_infrastructure, case=False, na=False) == True
 
-                contains_infrastructure_terms = is_infrastructure_term_in_NOME_UO | is_infrastructure_term_in_NOME_FONTE_REC
+                contains_infrastructure_terms = is_infrastructure_term_in_NOME_UO | is_infrastructure_term_in_NOME_FONTE_REC | is_infrastructure_term_in_FORNEC
 
                 df_infrastructure = df[contains_infrastructure_terms]
                 ################
@@ -46,8 +48,9 @@ def build_cities_secretaries():
                 # education
                 is_education_term_in_NOME_UO = df['NOME_UO'].str.contains(query_education, case=False, na=False) == True
                 is_education_term_in_NOME_FONTE_REC = df['NOME_FONTE_REC'].str.contains(query_education, case=False, na=False) == True
+                is_education_term_in_NOME_FORNEC = df['FORNEC'].str.contains(query_education, case=False, na=False) == True
 
-                contains_education_terms = is_education_term_in_NOME_UO | is_education_term_in_NOME_FONTE_REC
+                contains_education_terms = is_education_term_in_NOME_UO | is_education_term_in_NOME_FONTE_REC | is_education_term_in_NOME_FORNEC
                 df_education = df[contains_education_terms]
                 ###########
 
