@@ -94,6 +94,9 @@ def get_all_ibge_cities_concatenated() -> pd.DataFrame:
         filename = '_'.join(words)
 
         df = pd.read_csv('./data/IBGE_cities/{}.csv'.format(filename))
+        df['Município'] = city
+
+        df.loc[len(df)] = ['Município', city]
 
         rows.append(df.value.tolist())
 
@@ -106,7 +109,7 @@ def build_formatted_ibge_cities():
     df = get_all_ibge_cities_concatenated()
     df = format_ibge_cities(df)
 
-    df.to_csv('./data/cities_IBGE.csv')
+    df.to_csv('./data/cities_IBGE.csv', index=False)
 
 
 if __name__ == '__main__':
