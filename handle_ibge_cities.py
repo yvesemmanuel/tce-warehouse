@@ -48,6 +48,17 @@ def format_count_float(value):
         return None
     
 
+def format_string_to_float(value: str):
+    numeric = value.split(' ')[0]
+
+    numeric = numeric.replace('.', '')
+    numeric = numeric.replace(',', '.')
+
+    numeric = float(numeric)
+
+    return numeric
+
+
 def format_ibge_cities(df: pd.DataFrame) -> pd.DataFrame:
     df['População estimada [2021]'] = df['População estimada [2021]'].apply(format_count)
     df['População no último censo [2010]'] = df['População no último censo [2010]'].apply(format_count)
@@ -81,6 +92,11 @@ def format_ibge_cities(df: pd.DataFrame) -> pd.DataFrame:
 
     df['Área da unidade territorial [2021]'] = df['Área da unidade territorial [2021]'].apply(format_count_float)
 
+    df['Salário médio mensal dos trabalhadores formais [2020]'] = df['Salário médio mensal dos trabalhadores formais [2020]'].apply(format_string_to_float)
+    df['Densidade demográfica [2010]'] = df['Densidade demográfica [2010]'].apply(format_string_to_float)
+
+    df['Sistema Costeiro-Marinho [2019]'] = df['Sistema Costeiro-Marinho [2019]'].apply(lambda x: 0 if x == 'Não pertence' else 1)
+
     return df
 
 
@@ -94,8 +110,6 @@ def get_all_ibge_cities_concatenated() -> pd.DataFrame:
         filename = '_'.join(words)
 
         df = pd.read_csv('./data/IBGE_cities/{}.csv'.format(filename))
-        df['Município'] = city
-
         df.loc[len(df)] = ['Município', city]
 
         rows.append(df.value.tolist())

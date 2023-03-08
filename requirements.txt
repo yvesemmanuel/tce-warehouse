@@ -3,3 +3,7 @@ ipykernel
 bs4
 selenium
 unidecode
+scikit-learn
+matplotlib
+sompy
+numpy
