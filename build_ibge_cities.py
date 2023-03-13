@@ -11,7 +11,7 @@ from unidecode import unidecode
 def get_city_ibge_page(city_name: str) -> str:
     url_ibge = 'https://cidades.ibge.gov.br/brasil/pe/{}/panorama'.format(city_name)
     
-    browser = webdriver.Chrome()
+    browser = webdriver.Chrome('./chrome/chromedriver.exe')
     browser.get(url_ibge)
 
     delay_seconds = 30
